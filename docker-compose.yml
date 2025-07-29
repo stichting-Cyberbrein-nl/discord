@@ -1,11 +1,25 @@
 services:
   discord-bot-dashboard:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2024-01-01T00:00:00Z}
+        VCS_REF: ${VCS_REF:-unknown}
+        VERSION: ${VERSION:-3.0}
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID:-}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET:-}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN:-}
+      - DISCORD_CALLBACK_URL=${DISCORD_CALLBACK_URL:-http://localhost:3000/login/api}
+      - DISCORD_ADMIN_IDS=${DISCORD_ADMIN_IDS:-}
+      - BOT_PREFIX=${BOT_PREFIX:--}
+      - BOT_PORT=${BOT_PORT:-3000}
+      - SESSION_SECRET=${SESSION_SECRET:-default_session_secret}
     volumes:
       # Mount config directory for persistent configuration
       - ./src/config:/usr/src/app/config
@@ -13,8 +27,13 @@ services:
       - ./src/themes:/usr/src/app/themes
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (res) => { console.log('Health check status:', res.statusCode); process.exit(res.statusCode === 200 ? 0 : 1) })"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s 
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3" 

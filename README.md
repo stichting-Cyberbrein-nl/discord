@@ -87,6 +87,12 @@ docker-compose down
 
 # Rebuild the container
 docker-compose up -d --build
+
+# Build with enhanced logging
+./build.sh
+
+# View detailed container logs
+docker-compose logs --tail=50 -f discord-bot-dashboard
 ```
 
 **Note:** Make sure Docker and Docker Compose are installed on your system.
