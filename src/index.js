@@ -16,6 +16,23 @@ const config = {
   port: process.env.BOT_PORT || process.env.PORT || 3000
 };
 
+// Add startup logging
+console.log('🚀 Starting Discord Bot Dashboard...');
+console.log('📊 Environment Configuration:');
+console.log(`  - NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`  - PORT: ${config.port}`);
+console.log(`  - DISCORD_CLIENT_ID: ${config.clientID ? 'SET' : 'NOT SET'}`);
+console.log(`  - DISCORD_CALLBACK_URL: ${config.callbackURL}`);
+console.log(`  - DISCORD_ADMIN_IDS: ${config.Admin.length > 0 ? 'SET' : 'NOT SET'}`);
+console.log(`  - DISCORD_BOT_TOKEN: ${config.token ? 'SET' : 'NOT SET'}`);
+
+// Validate required environment variables
+if (!config.clientID || !config.clientSecret || !config.token) {
+  console.error('❌ ERROR: Missing required Discord credentials!');
+  console.error('Please set DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, and DISCORD_BOT_TOKEN');
+  process.exit(1);
+}
+
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -61,7 +78,46 @@ app.use('/', require('./routes/plugins.js'));
 
 app.use('/login', require('./routes/login.js'));
 
-http.listen(port)
+// Add health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Start server with error handling
+const server = http.listen(port, () => {
+  console.log(`✅ Server started successfully on port ${port}`);
+  console.log(`🌐 Dashboard available at: http://localhost:${port}`);
+});
+
+// Error handling for server
+server.on('error', (error) => {
+  console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use`);
+  }
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('🛑 Received SIGTERM, shutting down gracefully...');
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('🛑 Received SIGINT, shutting down gracefully...');
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
 
 io.sockets.on('connection', function(sockets){
   setInterval(function(){ 
