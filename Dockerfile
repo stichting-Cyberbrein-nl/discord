@@ -54,7 +54,7 @@ RUN echo "🏗️ Build Information:" && \
 # Health check with better logging
 
 # Start the application with better error handling
-CMD echo "🚀 Starting Discord Bot Dashboard..." && \
+RUN echo "🚀 Starting Discord Bot Dashboard..." && \
     echo "📊 Environment:" && \
     echo "  - NODE_ENV: $NODE_ENV" && \
     echo "  - PORT: $PORT" && \
