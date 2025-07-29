@@ -11,9 +11,8 @@ RUN npm install
 # Copy source code
 COPY src/ .
 
-# Create config directory and copy default config
+# Create config directory for compatibility
 RUN mkdir -p config
-COPY src/config/config.default.json config/config.json
 
 # Set environment variables
 ENV NODE_ENV=production

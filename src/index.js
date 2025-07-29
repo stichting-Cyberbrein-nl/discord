@@ -4,7 +4,17 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const fileUpload = require('express-fileupload');
-const config = require('./config/config.json')
+
+// Use environment variables for Dokploy compatibility
+const config = {
+  clientID: process.env.DISCORD_CLIENT_ID || '',
+  clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
+  callbackURL: process.env.DISCORD_CALLBACK_URL || 'http://localhost:3000/login/api',
+  Admin: process.env.DISCORD_ADMIN_IDS ? process.env.DISCORD_ADMIN_IDS.split(',') : [''],
+  token: process.env.DISCORD_BOT_TOKEN || '',
+  prefix: process.env.BOT_PREFIX || '-',
+  port: process.env.BOT_PORT || process.env.PORT || 3000
+};
 
 const app = express();
 const http = require('http').Server(app);
@@ -20,11 +30,10 @@ app.use(fileUpload());
 
 require('./auth/passport')(passport);
 
-
 // Express session
 app.use(
     session({
-      secret: '4135231b7f33c66406cdb2a78420fa76',
+      secret: process.env.SESSION_SECRET || '4135231b7f33c66406cdb2a78420fa76',
       resave: true,
       saveUninitialized: true
     })
