@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   discord-bot-dashboard:
     build: .
@@ -8,8 +6,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-    env_file:
-      - .env
     volumes:
       # Mount config directory for persistent configuration
       - ./src/config:/usr/src/app/config
