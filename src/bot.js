@@ -1,7 +1,19 @@
 const Discord = require("discord.js");
 const Enmap = require("enmap");
 const fs = require("fs");
-const chalk = require('chalk');
+// Optional chalk for better logging
+let chalk;
+try {
+  chalk = require('chalk');
+} catch (error) {
+  // Fallback if chalk is not available
+  chalk = {
+    green: (text) => `✅ ${text}`,
+    red: (text) => `❌ ${text}`,
+    yellow: (text) => `⚠️ ${text}`,
+    blue: (text) => `ℹ️ ${text}`
+  };
+}
 const commands = require('./commands/index');
 
 const { GatewayIntentBits } = require('discord.js');

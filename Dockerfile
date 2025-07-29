@@ -52,9 +52,12 @@ RUN echo "🏗️ Build Information:" && \
     ls -la config/ 2>/dev/null || echo "    (config directory is empty)"
 
 # Health check with better logging
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD echo "🏥 Running health check..." && \
+      node -e "require('http').get('http://localhost:3000/health', (res) => { console.log('Health check status:', res.statusCode); process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
 # Start the application with better error handling
-RUN echo "🚀 Starting Discord Bot Dashboard..." && \
+CMD echo "🚀 Starting Discord Bot Dashboard..." && \
     echo "📊 Environment:" && \
     echo "  - NODE_ENV: $NODE_ENV" && \
     echo "  - PORT: $PORT" && \
