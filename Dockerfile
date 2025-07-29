@@ -1,21 +1,30 @@
-FROM node:14
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-ENV clientID= \
-    clientSecret= \
-    callBackURL= \
-    admin= \
-    token= \
-    prefix= \
-    port=
+# Copy package files first for better caching
+COPY src/package*.json ./
 
-ADD src .
-
-COPY package*.json ./
-
+# Install dependencies
 RUN npm install
 
+# Copy source code
+COPY src/ .
+
+# Create config directory and copy default config
+RUN mkdir -p config
+COPY src/config/config.default.json config/config.json
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Expose the port
 EXPOSE 3000
 
-CMD clientID=$clientID clientSecret=$clientSecret callBackURL=$callBackURL admin=$admin token=$token prefix=$prefix port=$port node index.js
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+
+# Start the application
+CMD ["node", "index.js"]

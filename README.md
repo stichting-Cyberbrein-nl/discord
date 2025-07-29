@@ -53,6 +53,44 @@ node index.js
 ```
 You should now be able to access the dashboard at **http://localhost:3000**.
 
+#### 🐳 Docker Installation (Alternative)
+If you prefer to use Docker, you can run the application using Docker Compose:
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/LachlanDev/Discord-BOT-Dashboard-V2.git
+cd Discord-BOT-Dashboard-V2
+```
+
+2. **Configure your bot settings:**
+   - Copy `src/config/config.default.json` to `src/config/config.json`
+   - Edit `src/config/config.json` with your Discord bot credentials
+
+3. **Build and run with Docker Compose:**
+```bash
+docker-compose up -d
+```
+
+4. **Access the dashboard:**
+   - Open your browser and go to **http://localhost:3000**
+
+**Docker Commands:**
+```bash
+# Start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+
+# Rebuild the container
+docker-compose up -d --build
+```
+
+**Note:** Make sure Docker and Docker Compose are installed on your system.
+
 ## 🧰 Features
 A list of some of the features that are included in Discord BOT Dashboard V2
 * 🔐 **Authentication** - Discord BOT Dashboard is locked with a secure authentication method that only allows users who are added into the config file to access the dashboard.
